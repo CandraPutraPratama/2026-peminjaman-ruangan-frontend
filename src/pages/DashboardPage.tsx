@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getRooms } from '../services/roomService';
 import Navbar from '../components/Navbar';
+import BookingModal from '../components/BookingModal';
 
 const DashboardPage = () => {
   const [rooms, setRooms] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState<any>(null);
 
   useEffect(() => {
     const loadRooms = async () => {
@@ -12,9 +13,7 @@ const DashboardPage = () => {
         const response = await getRooms();
         setRooms(response.data);
       } catch (error) {
-        console.error("Gagal mengambil data ruangan!", error);
-      } finally {
-        setLoading(false);
+        console.error("Gagal memuat data ruangan!", error);
       }
     };
     loadRooms();
@@ -24,40 +23,31 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <div className="p-8 max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-extrabold text-gray-800">Daftar Ruangan</h2>
-          <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-            {rooms.length} Ruangan Tersedia
-          </span>
+        <h2 className="text-3xl font-extrabold text-gray-800 mb-8">Pilih Ruangan</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {rooms.map((room) => (
+            <div key={room.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+              <h3 className="text-xl font-bold text-blue-600 mb-2">{room.name}</h3>
+              <p className="text-gray-600 mb-4">Kapasitas: {room.capacity} Orang</p>
+              <button 
+                onClick={() => setSelectedRoom(room)}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition"
+              >
+                Pesan Sekarang
+              </button>
+            </div>
+          ))}
         </div>
-
-        {loading ? (
-          <p className="text-center text-gray-500">Loading data</p>
-        ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="p-4 font-bold text-gray-600 uppercase text-xs">Nama Ruangan</th>
-                  <th className="p-4 font-bold text-gray-600 uppercase text-xs text-center">Kapasitas</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {rooms.map((room) => (
-                  <tr key={room.id} className="hover:bg-blue-50/50 transition-colors">
-                    <td className="p-4 font-medium text-gray-700">{room.name}</td>
-                    <td className="p-4 text-center">
-                      <span className="bg-gray-100 px-3 py-1 rounded-md text-gray-600">
-                        {room.capacity} Orang
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {}
+      {selectedRoom && (
+        <BookingModal 
+          room={selectedRoom} 
+          onClose={() => setSelectedRoom(null)} 
+        />
+      )}
     </div>
   );
 };
