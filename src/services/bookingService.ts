@@ -16,3 +16,10 @@ export const getMyBookings = async () => {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
+
+export const deleteBooking = async (id: number) => {
+  const token = localStorage.getItem('token');
+  return await axios.delete(`${API_URL}/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
