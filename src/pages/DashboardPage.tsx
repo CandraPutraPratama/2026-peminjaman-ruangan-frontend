@@ -9,6 +9,8 @@ const DashboardPage = () => {
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
+  const userRole = localStorage.getItem('role');
+
   const loadRooms = async () => {
     try {
       const response = await getRooms();
@@ -40,12 +42,15 @@ const DashboardPage = () => {
       <div className="p-8 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-extrabold text-gray-800">Daftar Ruangan</h2>
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="bg-green-600 text-white px-6 py-2 rounded-full font-bold hover:bg-green-700 transition shadow-lg flex items-center gap-2"
-          >
-            <span>+</span> Tambah Ruangan
-          </button>
+          
+          {userRole === 'Admin' && (
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="bg-green-600 text-white px-6 py-2 rounded-full font-bold hover:bg-green-700 transition shadow-lg flex items-center gap-2"
+            >
+              <span>+</span> Tambah Ruangan
+            </button>
+          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,12 +72,14 @@ const DashboardPage = () => {
                   Pesan Sekarang
                 </button>
                 
-                <button 
-                  onClick={() => handleDeleteRoom(room.id, room.name)}
-                  className="w-full bg-white text-red-500 border border-red-200 py-1.5 rounded-lg text-sm font-semibold hover:bg-red-50 transition"
-                >
-                  Hapus Ruangan
-                </button>
+                {userRole === 'Admin' && (
+                  <button 
+                    onClick={() => handleDeleteRoom(room.id, room.name)}
+                    className="w-full bg-white text-red-500 border border-red-200 py-1.5 rounded-lg text-sm font-semibold hover:bg-red-50 transition"
+                  >
+                    Hapus Ruangan
+                  </button>
+                )}
               </div>
             </div>
           ))}
