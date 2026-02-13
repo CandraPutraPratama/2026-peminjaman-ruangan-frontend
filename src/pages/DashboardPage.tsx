@@ -11,7 +11,7 @@ const DashboardPage = () => {
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const userRole = localStorage.getItem("role");
+  const userRole = localStorage.getItem("role"); // Ambil kasta user
 
   const loadData = useCallback(async () => {
     try {
@@ -50,6 +50,22 @@ const DashboardPage = () => {
       return { isBooked: true, remaining: diff };
     }
     return { isBooked: false, remaining: 0 };
+  };
+
+  const handleDeleteRoom = async (id: number, name: string) => {
+    if (
+      window.confirm(
+        `Yakin mau hapus ${name}? Semua riwayat bokingan bakal ikut hilang!`,
+      )
+    ) {
+      try {
+        await deleteRoom(id);
+        alert("Ruangan berhasil dihapus!");
+        loadData();
+      } catch (error) {
+        alert("Gagal menghapus ruangan, coba lagi.");
+      }
+    }
   };
 
   const bookedCount = rooms.filter((r) => getRoomStatus(r.id).isBooked).length;
@@ -175,7 +191,7 @@ const DashboardPage = () => {
                   </p>
 
                   {status.isBooked && (
-                    <div className="bg-red-50 p-3 rounded-xl border border-red-100 mb-6 animate-in fade-in duration-500">
+                    <div className="bg-red-50 p-3 rounded-xl border border-red-100 mb-6">
                       <p className="text-[10px] font-black text-red-400 uppercase tracking-tighter mb-1">
                         Status Penggunaan
                       </p>
@@ -199,6 +215,15 @@ const DashboardPage = () => {
                       ? "Ruangan Sedang Digunakan"
                       : "Pesan Sekarang"}
                   </button>
+
+                  {userRole === "Admin" && (
+                    <button
+                      onClick={() => handleDeleteRoom(room.id, room.name)}
+                      className="w-full bg-white text-red-400 hover:text-red-600 py-2 rounded-xl text-xs font-bold transition-colors opacity-50 hover:opacity-100 tracking-widest uppercase"
+                    >
+                      Hapus Ruangan
+                    </button>
+                  )}
                 </div>
               </div>
             );
